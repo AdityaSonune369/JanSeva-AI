@@ -1,17 +1,21 @@
-# JanSeva AI - Design Document
+# JanSeva AI - Proposed System Design
+>
+> **Status:** Planning Phase | **Version:** Draft 1.0
 
 ## 1. System Architecture
 
-### 1.1. Technology Stack
-- **Frontend Framework**: React 19 with TypeScript.
-- **Build Tool**: Vite (for fast development and built-in HMR).
+### 1.1. Proposed Technology Stack
+
+- **Frontend Framework**: React 19 (or latest stable) with TypeScript.
+- **Build Tool**: Vite (for rapid development).
 - **Styling**: Tailwind CSS (Utility-first) + Custom CSS Variables.
-- **Animations**: Framer Motion (for smooth page transitions and micro-interactions).
+- **Animations**: Framer Motion (for smooth transitions).
 - **Icons**: Lucide React.
 - **AI Service**: Google Gemini API via `@google/generative-ai`.
-- **PWA Support**: `vite-plugin-pwa` for offline capabilities and installation.
+- **PWA Support**: `vite-plugin-pwa` for offline capabilities.
 
 ### 1.2. Architecture Diagram (Conceptual)
+
 ```mermaid
 graph TD
     User((User)) -->|Voice/Touch| App[VoiceShell / App]
@@ -32,53 +36,55 @@ graph TD
     Page -->|Speak| VoiceContext
 ```
 
-## 2. Component Design
+## 2. Component Design (Draft)
 
 ### 2.1. Core Components
-- **VoiceProvider (`context/VoiceContext.tsx`)**: The central nervous system of the app. It manages:
-    - `listen()`: Triggers Web Speech API.
-    - `speak()`: Triggers Speech Synthesis API.
-    - `transcript`: Global state of what the user just said.
-- **VoiceShell (`components/VoiceShell.tsx`)**: Wraps the main layout. Contains the permanent "Mic" button and visualizers for voice activity.
-- **AppContent (`App.tsx`)**: Handles global command routing (e.g., specific keywords like "Jobs" or "Home" trigger navigation).
 
-### 2.2. Page Modules
-- **Dashboard**: Grid layout with high-level entry points (Rozgar, Yojna, etc.).
-- **Jobs / Schemes / Community**: Listing pages with card-based layouts.
-- **Advisory**: Chat-like interface integrated with the AI service.
+- **Voice Provider Component**: The central nervous system of the app. It will manage:
+  - Listen triggers (Web Speech API).
+  - Speech synthesis triggers (TTS).
+  - Global transcript state.
+- **Voice Shell Wrapper**: A layout wrapper containing the permanent "Mic" button and visualizers.
+- **App Router**: Handles global command routing (e.g., specific keywords like "Jobs" trigger navigation).
 
-## 3. Data Flow & AI Integration
+### 2.2. Proposed Page Modules
+
+- **Dashboard**: Grid layout entry point.
+- **Jobs / Schemes / Community**: Listing views.
+- **Advisory**: Conversational interface integrated with AI.
+
+## 3. Data Flow & AI Integration Strategy
 
 ### 3.1. Voice Command Flow
-1. User taps mic -> `VoiceContext` starts listening.
-2. Resulting text is stored in `transcript`.
-3. `App.tsx` effect hook watches `transcript`.
-4. If keyword matches (e.g., "naukri"), `useNavigate` serves the new route.
-5. `transcript` is cleared to prevent double-firing.
+
+1. User interacts with mic -> System starts listening.
+2. Resulting text is stored in ephemeral state.
+3. Router watches for keywords in the transcript.
+4. Navigation occurs upon match.
+5. Transcript is cleared to prevent double-firing.
 
 ### 3.2. Contextual AI
-- **Service**: `src/services/ai.ts` exports `getAIResponse(prompt)`.
-- **Fallback**: If API key is missing or network fails, a mock response system ensures the user is never left hanging.
-- **Usage**: Pages like `Advisory` call this service with user queries combined with prompt engineering (e.g., "Act as an agricultural expert...").
 
-## 4. UI/UX Design System
+- **Service Layer**: An abstraction over the Gemini API.
+- **Resolution Strategy**:
+  - **API Available**: Query Gemini with context-specific system prompts.
+  - **Offline/Error**: Fallback to local heuristic responses to ensure user confidence.
+
+## 4. UI/UX Design System Proposal
 
 ### 4.1. Visual Theme
-- **Glassmorphism**: Translucent cards (`bg-white/10`, `backdrop-blur`) against a dark gradient background.
-- **Color Coding**:
-    - **Blue**: Jobs (Trust/Professionalism)
-    - **Green**: Schemes (Growth/Prosperity)
-    - **Yellow**: Advisory (Warning/Attention/Intellect)
-    - **Purple**: Community (Solidarity)
-- **Typography**: Clean, sans-serif fonts suitable for Hindi and English.
+
+- **Glassmorphism**: Translucent cards against dark gradients.
+- **Color Coding**: Semantic colors for modules (Blue=Jobs, Green=Schemes).
+- **Typography**: Clean, sans-serif fonts supporting Hindi scripts.
 
 ### 4.2. Interaction Design
-- **Micro-interactions**: Buttons scale down on click (`active:scale-95`).
-- **Transitions**: Pages fade in/out (`AnimatePresence`) to smooth out navigation jarring.
-- **Visual Feedback**:
-    - **Pulse Animation**: When the system is listening.
-    - **Spinning/Loading**: When AI is processing.
+
+- **Micro-interactions**: Scaling and haptic-like visual feedback.
+- **Transitions**: Smooth page fades.
+- **Visual Feedback**: Pulse animations for listening states.
 
 ## 5. Security & Privacy
-- **Microphone Access**: Requested only when necessary.
-- **API Keys**: Stored in `.env` (Vite environment variables) and not exposed in client bundles (though care must be taken with public API keys in PWAs).
+
+- **Permissions**: Microphone access requested on-demand.
+- **Key Management**: Environment variable usage for API keys.
