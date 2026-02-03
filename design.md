@@ -18,19 +18,19 @@
 
 ```mermaid
 graph TD
-    User((User)) -->|Voice/Touch| App[VoiceShell / App]
-    App -->|Transcript| VoiceContext[Voice Provider]
-    VoiceContext -->|Command| Router[React Router]
+    User((User)) -->|"Voice/Touch"| App["VoiceShell / App"]
+    App -->|Transcript| VoiceContext["Voice Provider"]
+    VoiceContext -->|Command| Router["React Router"]
     
-    subgraph Context Layer
-    VoiceContext -- Web Speech API --> Browser[Browser Speech Engine]
+    subgraph ContextLayer ["Context Layer"]
+    VoiceContext -- "Web Speech API" --> Browser["Browser Speech Engine"]
     end
     
     subgraph Services
-    AIService[AI Service (Gemini)]
+    AIService["AI Service (Gemini)"]
     end
     
-    Router -->|Render| Page[Active Page]
+    Router -->|Render| Page["Active Page"]
     Page -->|Query| AIService
     AIService -->|Response| Page
     Page -->|Speak| VoiceContext
