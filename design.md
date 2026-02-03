@@ -14,27 +14,14 @@
 - **AI Service**: Google Gemini API via `@google/generative-ai`.
 - **PWA Support**: `vite-plugin-pwa` for offline capabilities.
 
-### 1.2. Architecture Diagram (Conceptual)
+### 1.2. High-Level Workflow
 
-```mermaid
-graph TD
-    User((User)) -->|"Voice/Touch"| App["VoiceShell / App"]
-    App -->|Transcript| VoiceContext["Voice Provider"]
-    VoiceContext -->|Command| Router["React Router"]
-    
-    subgraph ContextLayer ["Context Layer"]
-    VoiceContext -- "Web Speech API" --> Browser["Browser Speech Engine"]
-    end
-    
-    subgraph Services
-    AIService["AI Service - Gemini"]
-    end
-    
-    Router -->|Render| Page["Active Page"]
-    Page -->|Query| AIService
-    AIService -->|Response| Page
-    Page -->|Speak| VoiceContext
-```
+1. **User Input**: User speaks a command or taps the interface.
+2. **Processing**: The Voice Provider captures the speech and converts it to text.
+3. **Routing/Action**:
+   - If it's a navigation command (e.g., "Jobs"), the Router changes the page.
+   - If it's a query (e.g., "How do I apply?"), the AI Service generates a response.
+4. **Output**: The system responds visually (UI update) and audibly (Text-to-Speech).
 
 ## 2. Component Design (Draft)
 
