@@ -27,7 +27,7 @@ graph TD
     end
     
     subgraph Services
-    AIService["AI Service (Gemini)"]
+    AIService["AI Service - Gemini"]
     end
     
     Router -->|Render| Page["Active Page"]
