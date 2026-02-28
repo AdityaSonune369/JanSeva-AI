@@ -11,7 +11,10 @@
 - **Styling**: Tailwind CSS (Utility-first) + Custom CSS Variables.
 - **Animations**: Framer Motion (for smooth transitions).
 - **Icons**: Lucide React.
-- **AI Service**: Google Gemini API via `@google/generative-ai`.
+- **AI Service**: **Amazon Bedrock** (Anthropic Claude 3 / Meta Llama 3) for generative AI capabilities.
+- **Backend UI & API**: **AWS Lambda** (Serverless backend functions) + **API Gateway**.
+- **Database**: **Amazon DynamoDB** for storing jobs, schemes, and user profiles.
+- **Storage**: **Amazon S3** for static web hosting and storing media (civic issue evidence, audio).
 - **PWA Support**: `vite-plugin-pwa` for offline capabilities.
 
 ### 1.2. High-Level Workflow
@@ -52,9 +55,9 @@
 
 ### 3.2. Contextual AI
 
-- **Service Layer**: An abstraction over the Gemini API.
+- **Service Layer**: A serverless **AWS Lambda** function acting as a secure proxy to query the **Amazon Bedrock** API.
 - **Resolution Strategy**:
-  - **API Available**: Query Gemini with context-specific system prompts.
+  - **API Available**: The frontend calls the API Gateway -> Lambda -> Bedrock with context-specific system prompts.
   - **Offline/Error**: Fallback to local heuristic responses to ensure user confidence.
 
 ## 4. UI/UX Design System Proposal

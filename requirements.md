@@ -51,7 +51,7 @@
 
 ### 3.3. Artificial Intelligence Strategy
 
-- **Conversational Agent**: Integration with Gemini AI to process unstructured queries.
+- **Conversational Agent**: Integration with **Amazon Bedrock** (invoking models like Anthropic Claude 3 or Meta Llama 3) to process unstructured queries and act as the core conversational agent.
 - **Context Awareness**: The AI will be designed to understand page-level context.
 
 ## 4. Non-Functional Requirements
