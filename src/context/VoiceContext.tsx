@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useState, useContext, useCallback } from 'react';
+import type { ReactNode } from 'react';
 
 interface VoiceContextType {
     isListening: boolean;
@@ -7,6 +8,7 @@ interface VoiceContextType {
     error: string | null;
     listen: () => void;
     speak: (text: string, lang?: string) => void;
+    stopSpeak: () => void;
     setTranscript: (text: string) => void;
 }
 
@@ -28,6 +30,13 @@ export const VoiceProvider = ({ children }: { children: ReactNode }) => {
             utterance.lang = lang;
             utterance.onend = () => setIsSpeaking(false);
             window.speechSynthesis.speak(utterance);
+        }
+    }, []);
+
+    const stopSpeak = useCallback(() => {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            setIsSpeaking(false);
         }
     }, []);
 
@@ -76,7 +85,7 @@ export const VoiceProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     return (
-        <VoiceContext.Provider value={{ isListening, transcript, isSpeaking, error, listen, speak, setTranscript }}>
+        <VoiceContext.Provider value={{ isListening, transcript, isSpeaking, error, listen, speak, stopSpeak, setTranscript }}>
             {children}
         </VoiceContext.Provider>
     );

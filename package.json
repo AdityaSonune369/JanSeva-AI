@@ -10,13 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.1000.0",
     "@google/generative-ai": "^0.24.1",
     "clsx": "^2.1.1",
+    "firebase": "^12.10.0",
     "framer-motion": "^12.29.2",
     "lucide-react": "^0.563.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-router-dom": "^7.13.0",
+    "react-router-dom": "^7.13.1",
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {

@@ -1,82 +1,131 @@
-import { BedrockRuntimeClient, InvokeModelCommand } from "@aws-sdk/client-bedrock-runtime";
-
-// Initialize the Bedrock client
-// The AWS SDK automatically picks up credentials from the Lambda environment
-const client = new BedrockRuntimeClient({ region: process.env.AWS_REGION || "us-east-1" });
-
 export const handler = async (event) => {
     console.log("Event Received:", JSON.stringify(event, null, 2));
 
-    try {
-        // 1. Parse the request body
-        // When using API Gateway proxy integration, the body is a string
-        const body = event.body ? JSON.stringify(event.body) : event;
-        const { query, context = "general" } = body;
-
-        if (!query) {
-            return {
-                statusCode: 400,
-                headers: { "Access-Control-Allow-Origin": "*" }, // CORS
-                body: JSON.stringify({ error: "Missing 'query' in request body" })
-            };
-        }
-
-        // 2. Format the prompt for Anthropic Claude 3 Haiku
-        const systemPrompt = `You are JanSeva AI, a helpful, respectful, and honest voice assistant designed for rural and semi-urban citizens in India. 
-Your primary goal is to provide accurate information about government schemes (Yojna), jobs (Rozgar), and general advisory (Agriculture, Health, Legal).
-Current Context: The user is currently in the '${context}' section of the app.
-Please keep your answers extremely concise (1-3 sentences max) as they will be read aloud via Text-to-Speech. Use simple English or Hinglish if appropriate.`;
-
-        const claudePayload = {
-            anthropic_version: "bedrock-2023-05-31",
-            max_tokens: 250,
-            system: systemPrompt,
-            messages: [
-                {
-                    role: "user",
-                    content: [
-                        {
-                            type: "text",
-                            text: query
-                        }
-                    ]
-                }
-            ],
-            temperature: 0.7,
-            top_p: 0.9,
-        };
-
-        // 3. Prepare the Bedrock API Command
-        // Model ID for Claude 3 Haiku is typically: anthropic.claude-3-haiku-20240307-v1:0
-        // Make sure you have requested access to this model in your Bedrock console
-        const command = new InvokeModelCommand({
-            contentType: "application/json",
-            body: JSON.stringify(claudePayload),
-            modelId: "anthropic.claude-3-haiku-20240307-v1:0",
-            accept: "application/json",
-        });
-
-        // 4. Invoke the Model
-        const response = await client.send(command);
-
-        // 5. Parse the Response
-        const responseBody = JSON.parse(new TextDecoder().decode(response.body));
-        const aiText = responseBody.content[0].text;
-
-        // 6. Return standard API Gateway response
+    // Handle CORS Preflight (OPTIONS) request automatically
+    if (event.httpMethod === 'OPTIONS' || (event.requestContext && event.requestContext.http && event.requestContext.http.method === 'OPTIONS')) {
         return {
             statusCode: 200,
             headers: {
-                "Access-Control-Allow-Origin": "*", // Required for CORS support to work from the React frontend
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+                "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+            },
+            body: JSON.stringify({ message: "CORS preflight successful" })
+        };
+    }
+
+    try {
+        const body = event.body ? JSON.parse(event.body) : event;
+        const { query, context = "general", imageBase64 } = body;
+
+        if (!query && !imageBase64) {
+            return {
+                statusCode: 400,
+                headers: { "Access-Control-Allow-Origin": "*" },
+                body: JSON.stringify({ error: "Missing 'query' or 'image' in request body" })
+            };
+        }
+
+        let systemPrompt = `You are JanSeva AI, a highly knowledgeable, respectful, and helpful voice assistant designed for citizens in India. 
+Your primary goal is to provide accurate information about government schemes (Yojna), jobs (Rozgar), and general advisory (Agriculture, Health, Legal).
+However, you are also encouraged to answer ANY question the user asks, even if it is out of scope. 
+Current Context: The user is currently in the '${context}' section of the app.
+CRITICAL INSTRUCTION ON TONE: You MUST speak like a real human voice assistant (like Siri, Alexa, or a helpful phone operator). START your answers directly by talking to the user (e.g., "Sure, I can tell you about that!"). Do NOT structure your answers like a Wikipedia article, an essay, or a Google Search result. Do NOT use bullet points, numbered lists, or formal essay structures. Talk naturally, friendly, and conversationally in paragraphs. Keep your sentences easy to listen to. Use English or Hinglish as appropriate.`;
+
+        if (context === "samasya" && imageBase64) {
+            systemPrompt = `You are an expert agricultural AI. The user has uploaded an image of a leaf or crop. 
+Analyze the image specifically for signs of diseases, pests, or nutrient deficiencies.
+If you identify an issue, state the name of the disease clearly and provide a short, highly recommended treatment or action (e.g., "Apply Copper Oxychloride").
+If the image is NOT of a plant or crop (e.g., a mountain, a person, a dog), politely inform the user that you can only analyze crop and plant images.
+Keep your response concise and structured like a diagnosis card.`;
+        }
+
+        const { BedrockRuntimeClient, InvokeModelCommand } = await import("@aws-sdk/client-bedrock-runtime");
+        const client = new BedrockRuntimeClient({ region: "us-east-1" });
+
+        // Using Amazon's 1st party Nova model which supports multimodal input
+        const modelId = "amazon.nova-lite-v1:0";
+
+        let messageContent = [];
+
+        if (imageBase64) {
+            // Nova expects images to be passed in a specific format within the content array
+            // Format: Base64 string without the data URI prefix
+            const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
+            const mimeMatch = imageBase64.match(/^data:(image\/\w+);base64,/);
+            const mimeType = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+
+            // Map common MIME types to formats supported by Nova ('png', 'jpeg', 'gif', 'webp')
+            let format = 'jpeg';
+            if (mimeType.includes('png')) format = 'png';
+            if (mimeType.includes('gif')) format = 'gif';
+            if (mimeType.includes('webp')) format = 'webp';
+
+            messageContent.push({
+                image: {
+                    format: format,
+                    source: {
+                        bytes: base64Data
+                    }
+                }
+            });
+        }
+
+        if (query) {
+            messageContent.push({ text: query });
+        } else if (imageBase64) {
+            messageContent.push({ text: "Please analyze this image." });
+        }
+
+        const novaPayload = {
+            system: [{ text: systemPrompt }],
+            messages: [
+                {
+                    role: "user",
+                    content: messageContent
+                }
+            ],
+            inferenceConfig: {
+                max_new_tokens: 250,
+                temperature: 0.7
+            }
+        };
+
+        const command = new InvokeModelCommand({
+            modelId: modelId,
+            contentType: "application/json",
+            accept: "application/json",
+            body: JSON.stringify(novaPayload)
+        });
+
+        const response = await client.send(command);
+
+        const responseBody = JSON.parse(new TextDecoder().decode(response.body));
+
+        let aiText = "Sorry, I could not generate a response.";
+        if (responseBody.output && responseBody.output.message && responseBody.output.message.content) {
+            aiText = responseBody.output.message.content[0].text.trim();
+        }
+
+        // Clean up Markdown symbols so the Voice engine doesn't read them out loud literally
+        const sanitizedText = aiText
+            .replace(/[*#_=~]+|\[|\]/g, '') // Remove *, #, _, =, ~, [, ]
+            .replace(/\n\s*\n/g, '\n')      // Remove excessive blank lines
+            .trim();
+
+        return {
+            statusCode: 200,
+            headers: {
+                "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Credentials": true,
             },
             body: JSON.stringify({
-                response: aiText,
+                response: sanitizedText,
             }),
         };
 
     } catch (error) {
-        console.error("Error invoking Bedrock:", error);
+        console.error("Error invoking Bedrock API:", error);
         return {
             statusCode: 500,
             headers: { "Access-Control-Allow-Origin": "*" },
