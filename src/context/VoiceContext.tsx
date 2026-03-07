@@ -70,7 +70,11 @@ export const VoiceProvider = ({ children }: { children: ReactNode }) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         recognition.onerror = (event: any) => {
             console.error("Speech Recognition Error:", event.error);
-            setError(event.error);
+            // Ignore benign timeout errors so we don't annoy the user
+            if (event.error !== 'no-speech') {
+                setError(event.error);
+                setTimeout(() => setError(null), 4000); // Auto-clear after 4s
+            }
             setIsListening(false);
         };
 
@@ -80,7 +84,8 @@ export const VoiceProvider = ({ children }: { children: ReactNode }) => {
             recognition.start();
         } catch (err) {
             console.error("Failed to start recognition:", err);
-            setError("Failed to start");
+            setError("Failed to start microphone. Please check permissions.");
+            setTimeout(() => setError(null), 4000);
         }
     }, []);
 
