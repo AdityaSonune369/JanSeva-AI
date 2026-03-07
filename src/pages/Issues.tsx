@@ -181,7 +181,7 @@ export default function Issues() {
                 ) : (
                     <div className="space-y-8 animate-fade-in">
                         <GlassCard className="p-0 overflow-hidden relative glass-card border-slate-700/50 shadow-[0_10px_40px_0_rgba(239,68,68,0.2)] rounded-3xl group">
-                            <img src={image} alt="Captured" className="w-full h-[300px] object-cover opacity-90 group-hover:scale-105 transition-transform duration-1000" />
+                            <img src={image} alt="Captured" className="w-full h-auto max-h-[400px] object-contain bg-black/40 opacity-90 group-hover:scale-105 transition-transform duration-1000" />
 
                             {analyzing && (
                                 <>
