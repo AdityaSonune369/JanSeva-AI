@@ -94,7 +94,8 @@ export const VoiceProvider = ({ children }: { children: ReactNode }) => {
 
     const listen = useCallback(() => {
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-            alert('Voice recognition not supported.');
+            setError('Voice recognition is not supported in this browser. Please use Chrome or Edge for voice features.');
+            setTimeout(() => setError(null), 5000);
             return;
         }
 
