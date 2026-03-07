@@ -11,8 +11,10 @@ import {
 interface AuthContextType {
     currentUser: User | null;
     loading: boolean;
+    isGuest: boolean;
     logout: () => Promise<void>;
     loginWithGoogle: () => Promise<void>;
+    continueAsGuest: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -24,6 +26,7 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isGuest, setIsGuest] = useState(false);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -35,6 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, []);
 
     const logout = () => {
+        setIsGuest(false);
         return signOut(auth);
     };
 
@@ -42,17 +46,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const provider = new GoogleAuthProvider();
         try {
             await signInWithPopup(auth, provider);
+            setIsGuest(false);
         } catch (error) {
             console.error("Error signing in with Google", error);
             throw error;
         }
     };
 
+    const continueAsGuest = () => {
+        setIsGuest(true);
+    };
+
     const value = {
         currentUser,
         loading,
+        isGuest,
         logout,
-        loginWithGoogle
+        loginWithGoogle,
+        continueAsGuest
     };
 
     return (

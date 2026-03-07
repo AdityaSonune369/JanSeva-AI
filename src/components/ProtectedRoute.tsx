@@ -3,9 +3,9 @@ import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-    const { currentUser } = useAuth();
+    const { currentUser, isGuest } = useAuth();
 
-    if (!currentUser) {
+    if (!currentUser && !isGuest) {
         return <Navigate to="/auth" replace />;
     }
 

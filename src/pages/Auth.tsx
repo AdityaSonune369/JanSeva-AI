@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Leaf } from 'lucide-react';
 
 export default function Auth() {
-    const { loginWithGoogle } = useAuth();
+    const { loginWithGoogle, continueAsGuest } = useAuth();
     const navigate = useNavigate();
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -82,9 +82,20 @@ export default function Auth() {
 
                         <div className="relative flex items-center">
                             <div className="flex-grow border-t border-white/10"></div>
-                            <span className="flex-shrink-0 mx-4 text-slate-500 text-sm font-medium">Fast & Secure</span>
+                            <span className="flex-shrink-0 mx-4 text-slate-500 text-sm font-medium">Or</span>
                             <div className="flex-grow border-t border-white/10"></div>
                         </div>
+
+                        <button
+                            onClick={() => {
+                                continueAsGuest();
+                                navigate('/');
+                            }}
+                            disabled={loading}
+                            className="w-full relative group overflow-hidden bg-transparent hover:bg-white/5 border border-white/10 p-4 rounded-2xl transition-all duration-300 flex items-center justify-center disabled:opacity-50"
+                        >
+                            <span className="text-white/80 group-hover:text-white font-medium text-lg relative z-10 transition-colors">Continue without sign in</span>
+                        </button>
 
                         <p className="text-center text-slate-400 text-sm">
                             By continuing, you agree to JanSeva's public service terms and conditions.
