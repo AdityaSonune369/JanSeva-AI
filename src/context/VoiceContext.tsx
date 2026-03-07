@@ -72,7 +72,7 @@ export const VoiceProvider = ({ children }: { children: ReactNode }) => {
             }
 
             // Adjust pitch/rate slightly for a warmer "Saarthi" tone if desired
-            utterance.rate = 1.0;
+            utterance.rate = 0.85;
             utterance.pitch = 1.0;
 
             utterance.onend = () => setIsSpeaking(false);
