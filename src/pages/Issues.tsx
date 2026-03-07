@@ -210,11 +210,7 @@ export default function Issues() {
                                             <h3 className="font-extrabold text-white text-xl tracking-wide mb-1 drop-shadow-sm">Diagnosis & Report Saved</h3>
                                             <div className="bg-slate-900/50 rounded-xl p-3 border border-white/5 mt-3 shadow-inner">
                                                 <p className="text-emerald-50 mt-1 text-base leading-relaxed font-medium">
-                                                    {result.split('. ').map((sentence, i) => (
-                                                        <span key={i} className={i === 0 ? "font-bold text-emerald-300 block mb-1 text-lg" : "text-slate-300 block"}>
-                                                            {sentence}{sentence && i === 0 ? '.' : ''}
-                                                        </span>
-                                                    ))}
+                                                    {result}
                                                 </p>
                                             </div>
                                         </div>
