@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, useCallback } from 'react';
+import { createContext, useState, useContext, useCallback, useEffect } from 'react';
 import type { ReactNode } from 'react';
 
 interface VoiceContextType {
@@ -20,15 +20,64 @@ export const VoiceProvider = ({ children }: { children: ReactNode }) => {
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    // Helper function to clean markdown and emojis before speaking
+    const sanitizeTextForSpeech = (text: string) => {
+        return text
+            .replace(/\*\*/g, '') // Remove bold markdown
+            .replace(/\*/g, '') // Remove italic markdown
+            .replace(/#/g, '') // Remove heading markdown
+            .replace(/`/g, '') // Remove code markdown
+            .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1') // Replaces links with just their text
+            .replace(/[\u{1F600}-\u{1F64F}]/gu, '') // Remove emojis group 1
+            .replace(/[\u{1F300}-\u{1F5FF}]/gu, '') // Remove emojis group 2
+            .replace(/[\u{1F680}-\u{1F6FF}]/gu, '') // Remove emojis group 3
+            .replace(/[\u{2600}-\u{26FF}]/gu, '') // Remove misc symbols
+            .replace(/[\u{2700}-\u{27BF}]/gu, ''); // Remove dingbats
+    };
+
+    // Load voices ASAP since browsers load them asynchronously
+    useEffect(() => {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.getVoices();
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.getVoices();
+            };
+        }
+    }, []);
+
     const speak = useCallback((text: string, lang = 'hi-IN') => {
         if ('speechSynthesis' in window) {
-            // Cancel any ongoing speech
             window.speechSynthesis.cancel();
-
             setIsSpeaking(true);
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = lang;
+
+            const cleanText = sanitizeTextForSpeech(text);
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+
+            // Try to find a high-quality, non-robotic voice
+            const voices = window.speechSynthesis.getVoices();
+            // 1. Try Google's specific language voice (highest quality local)
+            // 2. Try any Google voice matching the language code
+            // 3. Try any local voice matching the language code
+            let preferredVoice = voices.find(v => v.name.includes('Google') && v.lang.includes(lang.split('-')[0])) ||
+                voices.find(v => v.lang === lang) ||
+                voices.find(v => v.lang.includes(lang.split('-')[0]));
+
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+            } else {
+                utterance.lang = lang; // Fallback to asking browser for language
+            }
+
+            // Adjust pitch/rate slightly for a warmer "Saarthi" tone if desired
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+
             utterance.onend = () => setIsSpeaking(false);
+            utterance.onerror = (e) => {
+                console.error("Speech Synthesis Error:", e);
+                setIsSpeaking(false);
+            };
+
             window.speechSynthesis.speak(utterance);
         }
     }, []);
