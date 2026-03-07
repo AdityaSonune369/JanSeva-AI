@@ -6,7 +6,7 @@ This project was developed for the hackathon submission to showcase an ecosystem
 
 ## 🚀 Live Demo
 
-*(Insert Live Link here if deployed, e.g., on Vercel)*
+https://janseva-ai.vercel.app/
 
 ## ✨ Key Features
 
