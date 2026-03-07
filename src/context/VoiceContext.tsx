@@ -45,7 +45,7 @@ export const VoiceProvider = ({ children }: { children: ReactNode }) => {
         }
     }, []);
 
-    const speak = useCallback((text: string, lang = 'hi-IN') => {
+    const speak = useCallback((text: string, lang = 'mr-IN') => {
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
             setIsSpeaking(true);
@@ -56,11 +56,14 @@ export const VoiceProvider = ({ children }: { children: ReactNode }) => {
             // Try to find a high-quality, non-robotic voice
             const voices = window.speechSynthesis.getVoices();
             // 1. Try Google's specific language voice (highest quality local)
-            // 2. Try any Google voice matching the language code
-            // 3. Try any local voice matching the language code
+            // 2. Try any exact match for the language code
+            // 3. Try any loose match for the language code
+            // 4. BIG FALLBACK: If Marathi is missing on the OS, fall back to Hindi (shares Devanagari script)
             let preferredVoice = voices.find(v => v.name.includes('Google') && v.lang.includes(lang.split('-')[0])) ||
                 voices.find(v => v.lang === lang) ||
-                voices.find(v => v.lang.includes(lang.split('-')[0]));
+                voices.find(v => v.lang.includes(lang.split('-')[0])) ||
+                voices.find(v => v.name.includes('Google') && v.lang.includes('hi')) ||
+                voices.find(v => v.lang.includes('hi-IN'));
 
             if (preferredVoice) {
                 utterance.voice = preferredVoice;
