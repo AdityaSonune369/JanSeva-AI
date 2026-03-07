@@ -11,7 +11,8 @@ This project was developed for the hackathon submission to showcase an ecosystem
 ## ✨ Key Features
 
 - **Voice-First Interface**: Navigate the entire platform, input data, and receive spoken responses using advanced Speech-to-Text (STT) and Text-to-Speech (TTS) integrations, making the application accessible to users with low literacy or visual impairments.
-- **Paramarsh (Advisory)**: Upload an image (e.g., of a crop) and receive AI-driven multimodal analysis using **AWS Bedrock**. Generates actionable insights, context-aware advice, and treatment plans verbally and visually.
+- **Paramarsh (Advisory)**: Get real-time weather updates, live Mandi (market) rates, and context-aware agricultural alerts tailored to your location.
+- **Samasya (Issue Resolution)**: Upload an image (e.g., of a crop) and receive AI-driven multimodal analysis using **AWS Bedrock**. Generates actionable insights, disease diagnosis, and treatment plans verbally and visually.
 - **Yojna & Rozgar (Schemes & Jobs)**: AI-powered search for government schemes and employment opportunities tailored to the user's demographic and skills.
 - **Community Chatbot**: Engage with a personalized AI assistant that dynamically adjusts its response detail and complexity based on user preferences. Interactive features include pausing AI generation mid-response.
 - **Firebase Backend**: Real-time user authentication, secure profile management, and scalable data storage.
