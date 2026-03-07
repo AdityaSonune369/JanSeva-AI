@@ -10,6 +10,7 @@ import Community from './pages/Community';
 import Issues from './pages/Issues';
 import Auth from './pages/Auth';
 import Profile from './pages/Profile';
+import Chatbot from './pages/Chatbot';
 import { useEffect } from 'react';
 
 import { askJanSevaAI } from './services/ai';
@@ -23,6 +24,11 @@ function AppContent() {
 
   // Don't render VoiceShell or global layout on auth page
   const isAuthPage = location.pathname === '/auth';
+
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [location.pathname]);
 
   useEffect(() => {
     if (!transcript || isAuthPage) return;
@@ -45,6 +51,8 @@ function AppContent() {
       targetPath = '/community'; confirmText = "Opening Community";
     } else if (lower.includes('issue') || lower.includes('shikayat') || lower.includes('samasya') || lower.includes('doctor') || lower.includes('समस्या') || lower.includes('शिकायत') || lower.includes('डॉक्टर')) {
       targetPath = '/issues'; confirmText = "Opening Crop Doctor";
+    } else if (lower.includes('chat') || lower.includes('saarthi') || lower.includes('bot') || lower.includes('charcha') || lower.includes('मदद')) {
+      targetPath = '/chatbot'; confirmText = "Opening Saarthi Chatbot";
     } else if (lower.includes('home') || lower.includes('ghar') || lower.includes('घर')) {
       targetPath = '/'; confirmText = "Going Home";
     }
@@ -121,6 +129,7 @@ function AppContent() {
             <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
             <Route path="/issues" element={<ProtectedRoute><Issues /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/chatbot" element={<ProtectedRoute><Chatbot /></ProtectedRoute>} />
           </Routes>
         </AnimatePresence>
       </VoiceShell>

@@ -52,7 +52,7 @@ export const VoiceProvider = ({ children }: { children: ReactNode }) => {
 
         recognition.continuous = false;
         recognition.interimResults = false;
-        recognition.lang = 'hi-IN'; // Default to Hindi
+        recognition.lang = 'mr-IN'; // Changed to Marathi
 
         recognition.onstart = () => {
             setIsListening(true);

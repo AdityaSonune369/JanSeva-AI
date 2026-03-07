@@ -71,15 +71,20 @@ export default function Community() {
                     duration: durationStr
                 });
             };
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error creating post", error);
+            alert("Failed to share voice note. The file might be too large or there's a permission issue: " + error.message);
         }
     };
 
     const startRecording = async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const mediaRecorder = new MediaRecorder(stream);
+
+            // Compress audio aggressively so the Base64 string fits in a 1MB Firestore document
+            const options = { audioBitsPerSecond: 16000 };
+            const mediaRecorder = new MediaRecorder(stream, options);
+
             mediaRecorderRef.current = mediaRecorder;
             chunksRef.current = [];
 

@@ -16,6 +16,7 @@ export function PageTransition({ children }: PageTransitionProps) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -10 }}
             transition={{ duration: 0.15, ease: "easeInOut" }}
+            onAnimationStart={() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' })}
             className="w-full relative"
         >
             <button

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Briefcase, BookOpen, Users, AlertTriangle, TrendingUp, Sparkles, User as UserIcon } from 'lucide-react';
+import { Briefcase, BookOpen, Users, AlertTriangle, TrendingUp, Sparkles, User as UserIcon, MessageSquare } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -9,6 +9,7 @@ const MODULES = [
     { id: 'advisory', label: 'Paramarsh', sub: 'Advisory', icon: TrendingUp, color: 'text-yellow-400', bg: 'bg-yellow-400/20', border: 'hover:border-yellow-400/50 hover:shadow-[0_8px_32px_0_rgba(250,204,21,0.2)]' },
     { id: 'community', label: 'Samuday', sub: 'Community', icon: Users, color: 'text-purple-400', bg: 'bg-purple-400/20', border: 'hover:border-purple-400/50 hover:shadow-[0_8px_32px_0_rgba(192,132,252,0.2)]' },
     { id: 'issues', label: 'Samasya', sub: 'Issues', icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-400/20', border: 'hover:border-red-400/50 hover:shadow-[0_8px_32px_0_rgba(248,113,113,0.2)]' },
+    { id: 'chatbot', label: 'Saarthi', sub: 'Chatbot', icon: MessageSquare, color: 'text-indigo-400', bg: 'bg-indigo-400/20', border: 'hover:border-indigo-400/50 hover:shadow-[0_8px_32px_0_rgba(99,102,241,0.2)]' },
 ];
 
 const container = {
@@ -80,8 +81,8 @@ export default function Dashboard() {
                 animate="show"
                 className="grid grid-cols-2 gap-5 px-2 relative z-10"
             >
-                {MODULES.map((mod, index) => (
-                    <motion.div variants={item} key={mod.id} className={index === 4 ? "col-span-2" : ""}>
+                {MODULES.map((mod) => (
+                    <motion.div variants={item} key={mod.id}>
                         <Link
                             to={`/${mod.id}`}
                             className={`flex flex-col items-center justify-center py-6 px-4 glass-card active:scale-95 relative group overflow-hidden ${mod.border}`}
