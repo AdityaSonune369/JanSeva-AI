@@ -21,8 +21,8 @@ This project was developed for the hackathon submission to showcase an ecosystem
 
 - **Frontend**: React 19, Vite, TypeScript
 - **Styling & Animation**: Tailwind CSS v4, Framer Motion, Lucide React
-- **Backend Services**: Firebase (Auth, Firestore), AWS API Gateway & Lambda (Proxy for Gemini AI)
-- **AI/ML**: Google Gemini (via AWS Proxy), AWS Bedrock Runtime (for Multimodal/Visual analysis)
+- **Backend Services**: Firebase (Auth, Firestore), AWS API Gateway & Lambda (Proxy for Amazon Nova Lite)
+- **AI/ML**: Amazon Nova Lite via AWS API Gateway & Lambda, AWS Bedrock Runtime (for Multimodal/Visual analysis)
 
 ## 📦 Setting Up Locally
 
@@ -52,13 +52,14 @@ npm install
 Create a `.env` file in the root directory and add your keys (refer to `.env.example` if applicable, or include your Firebase and AWS proxy URLs):
 
 ```env
+VITE_GEMINI_API_KEY="your_gemini_api_key"
+VITE_AWS_API_GATEWAY_URL="your_aws_api_gateway_url"
 VITE_FIREBASE_API_KEY="your_api_key"
 VITE_FIREBASE_AUTH_DOMAIN="your_auth_domain"
 VITE_FIREBASE_PROJECT_ID="your_project_id"
 VITE_FIREBASE_STORAGE_BUCKET="your_storage_bucket"
 VITE_FIREBASE_MESSAGING_SENDER_ID="your_messaging_sender_id"
 VITE_FIREBASE_APP_ID="your_app_id"
-VITE_GEMINI_PROXY_URL="your_aws_lambda_proxy_url"
 ```
 
 ### 5. Run the Local Development Server
