@@ -62,7 +62,7 @@ export const VoiceProvider = ({ children }: { children: ReactNode }) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         recognition.onresult = (event: any) => {
             const text = event.results[0][0].transcript;
-            console.log("Global VoiceContext Result:", text);
+            // Global VoiceContext Result
             setTranscript(text);
             setIsListening(false);
         };

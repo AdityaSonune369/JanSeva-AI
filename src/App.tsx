@@ -34,7 +34,7 @@ function AppContent() {
     if (!transcript || isAuthPage) return;
 
     const lower = transcript.toLowerCase();
-    console.log("App processing global:", lower);
+    // App processing global
 
     const words = transcript.trim().split(/\s+/);
     const isShortCommand = words.length <= 3;
@@ -68,7 +68,7 @@ function AppContent() {
 
     const handleAIQuery = async () => {
       try {
-        console.log("Sending to JanSeva AI:", transcript);
+        // Sending to JanSeva AI
         const currentContext = location.pathname.substring(1) || 'home';
         const aiResponse = await askJanSevaAI(transcript, currentContext);
         speak(aiResponse);
