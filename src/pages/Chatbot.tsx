@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Send, Bot, User, MessageSquare } from 'lucide-react';
+import { Send, Bot, User, MessageSquare, VolumeX } from 'lucide-react';
 import { PageTransition } from '../components/ui/PageTransition';
 import { GlassCard } from '../components/ui/GlassCard';
 import { useVoice } from '../hooks/useVoice';
@@ -22,7 +22,7 @@ export default function Chatbot() {
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const { transcript, setTranscript, speak } = useVoice();
+    const { transcript, setTranscript, speak, isSpeaking, stopSpeak } = useVoice();
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -189,6 +189,16 @@ Write the detailed, multi-paragraph response here in the correct language.
 
                 {/* Input Area */}
                 <div className="shrink-0 relative z-20">
+                    {isSpeaking && (
+                        <div className="flex justify-center mb-3 animate-fade-in">
+                            <button
+                                onClick={stopSpeak}
+                                className="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 rounded-full px-5 py-2 flex items-center gap-2 text-sm font-bold shadow-[0_0_15px_rgba(239,68,68,0.2)] transition-all active:scale-95"
+                            >
+                                <VolumeX size={16} /> Stop Speaking
+                            </button>
+                        </div>
+                    )}
                     <form
                         onSubmit={(e) => { e.preventDefault(); handleSend(); }}
                         className="flex gap-2"
