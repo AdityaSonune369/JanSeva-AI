@@ -21,7 +21,7 @@ export default function Community() {
     const [posts, setPosts] = useState<AudioPost[]>([]);
     const [isRecording, setIsRecording] = useState(false);
     const [recordingTime, setRecordingTime] = useState(0);
-    const { currentUser } = useAuth();
+    const { currentUser, isGuest } = useAuth();
 
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const chunksRef = useRef<Blob[]>([]);
@@ -52,28 +52,38 @@ export default function Community() {
     }, []);
 
     const uploadBase64AndCreatePost = async (audioBlob: Blob, durationStr: string) => {
-        if (!currentUser) return;
+        if (!currentUser && !isGuest) {
+            alert("You must be signed in or using Guest Mode to share a recording.");
+            return;
+        }
 
         try {
-            // For hackathon simplicity, we convert audio Blob to base64 and save directly in Firestore document
-            // In production, we would use Firebase Storage and save the URL in Firestore
-            const reader = new FileReader();
-            reader.readAsDataURL(audioBlob);
-            reader.onloadend = async () => {
-                const base64Audio = reader.result;
+            // Convert Blob to Base64 using a Promise so we can properly try/catch it
+            const base64Audio = await new Promise<string>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result as string);
+                reader.onerror = reject;
+                reader.readAsDataURL(audioBlob);
+            });
 
-                await addDoc(collection(db, 'posts'), {
-                    user: currentUser.displayName || currentUser.email?.split('@')[0] || 'Anonymous Worker',
-                    userId: currentUser.uid,
-                    createdAt: serverTimestamp(),
-                    topic: 'Voice Note',
-                    audioUrl: base64Audio,
-                    duration: durationStr
-                });
-            };
+            const currentUserId = currentUser ? currentUser.uid : `guest_${Date.now()}`;
+            const currentUserName = currentUser
+                ? (currentUser.displayName || currentUser.email?.split('@')[0] || 'Anonymous User')
+                : 'Guest User';
+
+            await addDoc(collection(db, 'posts'), {
+                user: currentUserName,
+                userId: currentUserId,
+                createdAt: serverTimestamp(),
+                topic: 'Voice Note',
+                audioUrl: base64Audio,
+                duration: durationStr
+            });
+
+            console.log("Successfully posted audio note!");
         } catch (error: any) {
             console.error("Error creating post", error);
-            alert("Failed to share voice note. The file might be too large or there's a permission issue: " + error.message);
+            alert("Failed to share voice note. The file might be too large (Firestore 1MB limit) or there's a permission issue. Try recording a shorter clip.");
         }
     };
 
