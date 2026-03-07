@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Briefcase, BookOpen, Users, AlertTriangle, TrendingUp, Sparkles, User as UserIcon, MessageSquare } from 'lucide-react';
+import { Briefcase, BookOpen, Users, AlertTriangle, TrendingUp, User as UserIcon, MessageSquare } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -66,13 +66,6 @@ export default function Dashboard() {
                     <h1 className="text-5xl font-extrabold text-gradient mb-3 tracking-tight relative z-10 drop-shadow-lg">JanSeva AI</h1>
                     <p className="text-slate-300 text-lg font-medium tracking-wide relative z-10">How can I help you today?</p>
                 </motion.div>
-
-                <div className="absolute right-2 top-0 opacity-10 animate-spin-slow pointer-events-none">
-                    <Sparkles size={90} className="text-india-saffron" />
-                </div>
-                <div className="absolute left-2 top-10 opacity-10 animate-float pointer-events-none">
-                    <Sparkles size={50} className="text-india-green" />
-                </div>
             </header>
 
             <motion.div
