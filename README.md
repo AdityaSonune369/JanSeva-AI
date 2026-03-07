@@ -6,12 +6,12 @@ This project was developed for the hackathon submission to showcase an ecosystem
 
 ## 🚀 Live Demo
 
-https://janseva-ai.vercel.app/
+<https://janseva-ai.vercel.app/>
 
 ## ✨ Key Features
 
 - **Voice-First Interface**: Navigate the entire platform, input data, and receive spoken responses using advanced Speech-to-Text (STT) and Text-to-Speech (TTS) integrations, making the application accessible to users with low literacy or visual impairments.
-- **Paramarsh (Advisory & Healthcare)**: Upload an image (e.g., of a crop or a health concern) and receive AI-driven multimodal analysis using **AWS Bedrock**. Generates actionable insights, context-aware advice, and treatment plans verbally and visually.
+- **Paramarsh (Advisory)**: Upload an image (e.g., of a crop) and receive AI-driven multimodal analysis using **AWS Bedrock**. Generates actionable insights, context-aware advice, and treatment plans verbally and visually.
 - **Yojna & Rozgar (Schemes & Jobs)**: AI-powered search for government schemes and employment opportunities tailored to the user's demographic and skills.
 - **Community Chatbot**: Engage with a personalized AI assistant that dynamically adjusts its response detail and complexity based on user preferences. Interactive features include pausing AI generation mid-response.
 - **Firebase Backend**: Real-time user authentication, secure profile management, and scalable data storage.
@@ -52,7 +52,6 @@ npm install
 Create a `.env` file in the root directory and add your keys (refer to `.env.example` if applicable, or include your Firebase and AWS proxy URLs):
 
 ```env
-VITE_GEMINI_API_KEY="your_gemini_api_key"
 VITE_AWS_API_GATEWAY_URL="your_aws_api_gateway_url"
 VITE_FIREBASE_API_KEY="your_api_key"
 VITE_FIREBASE_AUTH_DOMAIN="your_auth_domain"
